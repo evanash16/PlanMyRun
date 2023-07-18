@@ -27,8 +27,8 @@ public class SimpleRoute<T extends Node> implements MutableRoute<T> {
     }
 
     public void addNode(final T node) {
-        this.nodes.add(node);
         this.distance += nodes.get(nodes.size() - 1).distanceTo(node);
+        this.nodes.add(node);
     }
 
     public double getDistance() {
