@@ -15,4 +15,9 @@ public interface Route<T extends Node> {
      * @return the total distance of the route.
      */
     double getDistance();
+
+    /**
+     * @return a shallow clone of the route.
+     */
+    Route<T> shallowClone();
 }
