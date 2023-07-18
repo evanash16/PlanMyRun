@@ -3,19 +3,19 @@ package planmyrun.graph;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SimpleGraph implements MutableGraph {
+public class SimpleGraph<T extends Node> implements MutableGraph<T> {
 
-    private final List<Node> nodes;
+    private final List<T> nodes;
 
     public SimpleGraph() {
         this.nodes = new ArrayList<>();
     }
 
-    public List<Node> getNodes() {
+    public List<T> getNodes() {
         return this.nodes;
     }
 
-    public void addNode(final Node node) {
+    public void addNode(final T node) {
         this.nodes.add(node);
     }
 }
