@@ -1,10 +1,10 @@
 package planmyrun;
 
 import planmyrun.graph.SimpleGraph;
-import planmyrun.graph.SimpleNode;
+import planmyrun.graph.node.SimpleNode;
 import planmyrun.route.Route;
-import planmyrun.route.Router;
-import planmyrun.route.SimpleRouter;
+import planmyrun.router.Router;
+import planmyrun.router.SimpleRouter;
 
 import java.util.stream.Collectors;
 

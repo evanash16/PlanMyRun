@@ -1,6 +1,6 @@
 package planmyrun.route;
 
-import planmyrun.graph.Node;
+import planmyrun.graph.node.Node;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package planmyrun.graph;
+package planmyrun.graph.node;
 
 public interface MutableNode extends Node {
 

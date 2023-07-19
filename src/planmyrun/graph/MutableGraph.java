@@ -1,5 +1,7 @@
 package planmyrun.graph;
 
+import planmyrun.graph.node.Node;
+
 public interface MutableGraph<T extends Node> extends Graph<T> {
 
     /**

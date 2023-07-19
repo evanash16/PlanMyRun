@@ -1,4 +1,4 @@
-package planmyrun.graph;
+package planmyrun.graph.node;
 
 import java.util.Collection;
 

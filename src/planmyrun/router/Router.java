@@ -1,6 +1,7 @@
-package planmyrun.route;
+package planmyrun.router;
 
-import planmyrun.graph.Node;
+import planmyrun.graph.node.Node;
+import planmyrun.route.Route;
 
 public interface Router {
 

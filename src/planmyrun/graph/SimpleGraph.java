@@ -1,5 +1,7 @@
 package planmyrun.graph;
 
+import planmyrun.graph.node.Node;
+
 import java.util.ArrayList;
 import java.util.List;
 

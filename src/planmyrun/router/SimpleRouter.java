@@ -1,6 +1,9 @@
-package planmyrun.route;
+package planmyrun.router;
 
-import planmyrun.graph.Node;
+import planmyrun.graph.node.Node;
+import planmyrun.route.MutableRoute;
+import planmyrun.route.Route;
+import planmyrun.route.SimpleRoute;
 
 import java.util.ArrayList;
 import java.util.Comparator;
