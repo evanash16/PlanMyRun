@@ -1,5 +1,7 @@
 package planmyrun.graph.node;
 
+import sun.java2d.pipe.SpanShapeRenderer;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,6 +27,10 @@ public class SimpleNode implements MutableNode {
     }
 
     public void addConnection(final Node node) {
+        if (!(node instanceof SimpleNode)) {
+            throw new IllegalArgumentException(String.format("Cannot add connection to node of type %s", node.getClass()));
+        }
+
         this.connections.add(node);
     }
 

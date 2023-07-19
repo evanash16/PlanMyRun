@@ -27,6 +27,10 @@ public class EarthNode implements MutableNode {
     }
 
     public void addConnection(final Node node) {
+        if (!(node instanceof EarthNode)) {
+            throw new IllegalArgumentException(String.format("Cannot add connection to node of type %s", node.getClass()));
+        }
+
         this.connections.add(node);
     }
 
