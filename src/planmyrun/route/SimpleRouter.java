@@ -2,7 +2,13 @@ package planmyrun.route;
 
 import planmyrun.graph.Node;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Queue;
 
 public class SimpleRouter implements Router {
 
