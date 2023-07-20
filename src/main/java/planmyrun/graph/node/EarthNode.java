@@ -8,7 +8,7 @@ import java.util.Set;
 
 public class EarthNode implements MutableNode {
 
-    private static final double EARTH_RADIUS = 40_075_017.0;
+    private static final double EARTH_RADIUS_IN_METERS = 6_371_000.0;
 
     private final double lat;
     private final double lon;
@@ -52,10 +52,10 @@ public class EarthNode implements MutableNode {
     private double distanceTo(final EarthNode node) {
         // a = {[1 - cos(lat2 - lat1)] + cos(lat1) * cos(lat2) * [1 - cos(lon2 - lon1)]} / 2
         final double a =
-                ((1 - Math.cos(node.getLat() - this.getLat())) +
-                        Math.cos(this.getLat()) * Math.cos(node.getLat()) * (1 - Math.cos(node.getLon() - this.getLon()))) / 2;
+                ((1 - Math.cos(Math.toRadians(node.getLat() - this.getLat()))) +
+                        Math.cos(Math.toRadians(this.getLat())) * Math.cos(Math.toRadians(node.getLat())) * (1 - Math.cos(Math.toRadians(node.getLon() - this.getLon())))) / 2;
         // distance = 2 * R * tan-1(sqrt(a) - sqrt(1 - a))
-        return 2 * EARTH_RADIUS * Math.atan(Math.sqrt(a) / Math.sqrt(1 - a));
+        return 2 * EARTH_RADIUS_IN_METERS * Math.atan(Math.sqrt(a) / Math.sqrt(1 - a));
     }
 
     public double getLat() {

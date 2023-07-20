@@ -1,61 +1,61 @@
 package planmyrun.router;
 
+import me.tongfei.progressbar.ProgressBar;
 import planmyrun.graph.node.Node;
 import planmyrun.route.MutableRoute;
 import planmyrun.route.Route;
 import planmyrun.route.SimpleRoute;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Queue;
+import java.util.*;
 
 public class SimpleRouter implements Router {
 
     private static final int MAX_DEPTH = 10000;
 
     public <T extends Node> Route<T> findRoute(T start, T end, double minimumDistance, double maximumDistance) {
-        // sort working routes from shortest to longest distance
-        final Queue<MutableRoute<T>> workingRoutes = new PriorityQueue<>(Comparator.comparing(Route::getDistance));
-        workingRoutes.add(new SimpleRoute<>(start));
+        try (ProgressBar pb = new ProgressBar("SimpleRouter", (long) minimumDistance)) {
+            // sort working routes from best to worst
+            final Queue<MutableRoute<T>> workingRoutes =
+                    new PriorityQueue<>(Comparator.comparing(this::rateRoute, Comparator.reverseOrder()));
 
-        final List<Route<T>> routes = new ArrayList<>();
+            MutableRoute<T> longestRoute = new SimpleRoute<>(start);
+            workingRoutes.add(longestRoute);
 
-        while (!workingRoutes.isEmpty()) {
-            final MutableRoute<T> workingRoute = workingRoutes.remove();
-            final T currentNode = workingRoute.getNodes().get(workingRoute.getNodes().size() - 1);
+            while (!workingRoutes.isEmpty()) {
+                final MutableRoute<T> workingRoute = workingRoutes.remove();
+                final T currentNode = workingRoute.getNodes().get(workingRoute.getNodes().size() - 1);
 
-            for (final Node nextNode : currentNode.getConnections()) {
-                final MutableRoute<T> routeWithConnectionAdded = workingRoute.shallowClone();
-                routeWithConnectionAdded.addNode((T) nextNode);
+                for (final Node nextNode : currentNode.getConnections()) {
+                    final MutableRoute<T> routeWithConnectionAdded = workingRoute.shallowClone();
+                    routeWithConnectionAdded.addNode((T) nextNode);
 
-                // a route is complete if it meets the distance constraints and ends
-                // with the requested node
-                if (routeWithConnectionAdded.getDistance() >= minimumDistance &&
-                        routeWithConnectionAdded.getDistance() <= maximumDistance &&
-                        nextNode.equals(end)) {
-                    routes.add(routeWithConnectionAdded);
-                // a route is considered infeasible if it exceeds the distance constraints
-                // or has too many nodes
-                } else if (routeWithConnectionAdded.getDistance() > maximumDistance ||
-                        routeWithConnectionAdded.getNodes().size() > MAX_DEPTH) {
-                    continue;
+                    // a route is complete if it meets the distance constraints and ends
+                    // with the requested node
+                    if (routeWithConnectionAdded.getDistance() >= minimumDistance &&
+                            routeWithConnectionAdded.getDistance() <= maximumDistance &&
+                            nextNode.equals(end)) {
+                        return routeWithConnectionAdded;
+                        // a route is considered infeasible if it exceeds the distance constraints
+                        // or has too many nodes
+                    } else if (routeWithConnectionAdded.getDistance() > maximumDistance ||
+                            routeWithConnectionAdded.getNodes().size() > MAX_DEPTH) {
+                        continue;
+                    } else if (routeWithConnectionAdded.getDistance() > longestRoute.getDistance()) {
+                        pb.stepTo((long) routeWithConnectionAdded.getDistance());
+                        longestRoute = routeWithConnectionAdded;
+                    }
+
+                    workingRoutes.add(routeWithConnectionAdded);
                 }
-
-                workingRoutes.add(routeWithConnectionAdded);
             }
-        }
 
-        return routes.stream()
-                .max(Comparator.comparing(this::rateRoute))
-                .orElse(null);
+            return null;
+        }
     }
 
     /**
      * Rate a route based on how many repeated nodes there are in the route.
+     *
      * @param route the route to rate
      * @return a double between 0 and 1 where a route with rating 1 is the best, and a route with rating 0 is the worst.
      */
