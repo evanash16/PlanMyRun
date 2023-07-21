@@ -17,7 +17,7 @@ public class SimpleRoute<T extends Node> implements MutableRoute<T> {
         this.distance = 0.0;
     }
 
-    private SimpleRoute(final List<T> nodes, final double distance) {
+    protected SimpleRoute(final List<T> nodes, final double distance) {
         this.nodes = nodes;
         this.distance = distance;
     }
@@ -35,7 +35,7 @@ public class SimpleRoute<T extends Node> implements MutableRoute<T> {
         return this.distance;
     }
 
-    public MutableRoute<T> shallowClone() {
+    public SimpleRoute<T> shallowClone() {
         return new SimpleRoute<>(new ArrayList<>(this.nodes), this.distance);
     }
 }

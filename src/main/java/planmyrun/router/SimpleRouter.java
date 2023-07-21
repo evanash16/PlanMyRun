@@ -8,21 +8,23 @@ import planmyrun.route.SimpleRoute;
 
 import java.util.*;
 
-public class SimpleRouter implements Router {
+public class SimpleRouter<T extends Node> implements Router<T> {
 
     private static final int MAX_DEPTH = 10000;
+    private final Queue<Route<T>> workingRoutes;
 
-    public <T extends Node> Route<T> findRoute(T start, T end, double minimumDistance, double maximumDistance) {
+    public SimpleRouter() {
+        // sort working routes from best to worst
+        workingRoutes = new PriorityQueue<>(Comparator.comparing(this::rateRoute, Comparator.reverseOrder()));
+    }
+
+    public Route<T> findRoute(T start, T end, double minimumDistance, double maximumDistance) {
         try (ProgressBar pb = new ProgressBar("SimpleRouter", (long) minimumDistance)) {
-            // sort working routes from best to worst
-            final Queue<MutableRoute<T>> workingRoutes =
-                    new PriorityQueue<>(Comparator.comparing(this::rateRoute, Comparator.reverseOrder()));
-
             MutableRoute<T> longestRoute = new SimpleRoute<>(start);
             workingRoutes.add(longestRoute);
 
             while (!workingRoutes.isEmpty()) {
-                final MutableRoute<T> workingRoute = workingRoutes.remove();
+                final MutableRoute<T> workingRoute = (MutableRoute<T>) workingRoutes.remove();
                 final T currentNode = workingRoute.getNodes().get(workingRoute.getNodes().size() - 1);
 
                 for (final Node nextNode : currentNode.getConnections()) {
@@ -53,13 +55,17 @@ public class SimpleRouter implements Router {
         }
     }
 
+    public Collection<Route<T>> getWorkingRoutes() {
+        return this.workingRoutes;
+    }
+
     /**
      * Rate a route based on how many repeated nodes there are in the route.
      *
      * @param route the route to rate
      * @return a double between 0 and 1 where a route with rating 1 is the best, and a route with rating 0 is the worst.
      */
-    private <T extends Node> double rateRoute(final Route<T> route) {
+    private double rateRoute(final Route<T> route) {
         final Map<Node, Integer> repeatVisitCountByNode = new HashMap<>();
 
         route.getNodes().forEach(node -> repeatVisitCountByNode.put(node, repeatVisitCountByNode.getOrDefault(node, -1) + 1));

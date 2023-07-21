@@ -1,5 +1,10 @@
 package planmyrun;
 
+import org.openstreetmap.gui.jmapviewer.*;
+import org.openstreetmap.gui.jmapviewer.interfaces.TileLoader;
+import org.openstreetmap.gui.jmapviewer.interfaces.TileSource;
+import org.openstreetmap.gui.jmapviewer.tilesources.BingAerialTileSource;
+import org.openstreetmap.gui.jmapviewer.tilesources.OsmTileSource;
 import planmyrun.dao.OverpassDao;
 import planmyrun.dao.OverpassDaoImpl;
 import planmyrun.graph.Graph;
@@ -13,8 +18,9 @@ import planmyrun.model.osm.QueryResult;
 import planmyrun.model.osm.Way;
 import planmyrun.route.Route;
 import planmyrun.router.Router;
-import planmyrun.router.SimpleRouter;
+import planmyrun.router.SometimesVisitTwiceRouter;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -33,8 +39,8 @@ public class Main {
                 .findFirst()
                 .orElseThrow(RuntimeException::new);
 
-        final Router router = new SimpleRouter();
-        final Route<EarthNode> route = router.findRoute(startingPoint, startingPoint, 10000, 15000);
+        final Router<EarthNode> router = new SometimesVisitTwiceRouter<>();
+        final Route<EarthNode> route = router.findRoute(startingPoint, startingPoint, 40000, 41000);
 
         if (route == null) {
             return;
@@ -71,8 +77,8 @@ public class Main {
                 final Long previousNode = way.getNodes().get(i - 1);
                 final Long currentNode = way.getNodes().get(i);
 
-                final EarthNode current = earthNodesByNodeId.get(currentNode);
                 final EarthNode previous = earthNodesByNodeId.get(previousNode);
+                final EarthNode current = earthNodesByNodeId.get(currentNode);
 
                 current.addConnection(previous);
                 previous.addConnection(current);

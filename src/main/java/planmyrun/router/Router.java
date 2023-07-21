@@ -3,7 +3,9 @@ package planmyrun.router;
 import planmyrun.graph.node.Node;
 import planmyrun.route.Route;
 
-public interface Router {
+import java.util.Collection;
+
+public interface Router<T extends Node> {
 
     /**
      * Find a route between a start {@link Node} and an end {@link Node} (of the same type) which has a length between
@@ -17,5 +19,7 @@ public interface Router {
      * @return a route, if possible, between {@param start} and {@param end} meeting the distance constraints set by
      * {@param minimumDistance} and {@param maximumDistance}.
      */
-    <T extends Node> Route<T> findRoute(final T start, final T end, final double minimumDistance, final double maximumDistance);
+    Route<T> findRoute(final T start, final T end, final double minimumDistance, final double maximumDistance);
+
+    Collection<Route<T>> getWorkingRoutes();
 }
