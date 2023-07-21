@@ -7,6 +7,7 @@ import planmyrun.route.Route;
 import planmyrun.route.SimpleRoute;
 
 import java.util.*;
+import java.util.concurrent.PriorityBlockingQueue;
 
 public class SimpleRouter<T extends Node> implements Router<T> {
 
@@ -15,7 +16,7 @@ public class SimpleRouter<T extends Node> implements Router<T> {
 
     public SimpleRouter() {
         // sort working routes from best to worst
-        workingRoutes = new PriorityQueue<>(Comparator.comparing(this::rateRoute, Comparator.reverseOrder()));
+        workingRoutes = new PriorityBlockingQueue<>(11, Comparator.comparing(this::rateRoute, Comparator.reverseOrder()));
     }
 
     public Route<T> findRoute(T start, T end, double minimumDistance, double maximumDistance) {

@@ -21,5 +21,8 @@ public interface Router<T extends Node> {
      */
     Route<T> findRoute(final T start, final T end, final double minimumDistance, final double maximumDistance);
 
+    /**
+     * @return the current working {@link Collection} of {@link Route}s.
+     */
     Collection<Route<T>> getWorkingRoutes();
 }

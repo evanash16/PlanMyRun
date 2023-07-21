@@ -3,11 +3,17 @@ package planmyrun.router;
 import me.tongfei.progressbar.ProgressBar;
 import me.tongfei.progressbar.ProgressBarBuilder;
 import me.tongfei.progressbar.ProgressBarStyle;
+import planmyrun.graph.node.EarthNode;
 import planmyrun.graph.node.Node;
 import planmyrun.route.Route;
 import planmyrun.route.SometimesVisitTwiceRoute;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.PriorityBlockingQueue;
 import java.util.stream.Collectors;
 
 public class SometimesVisitTwiceRouter<T extends Node> implements Router<T> {
@@ -16,19 +22,12 @@ public class SometimesVisitTwiceRouter<T extends Node> implements Router<T> {
     private final Queue<Route<T>> workingRoutes;
 
     public SometimesVisitTwiceRouter() {
-        workingRoutes =
-                new PriorityQueue<>(Comparator.comparing(Route::getDistance, Comparator.reverseOrder()));
+        // sort working routes from longest to shortest
+        workingRoutes = new PriorityBlockingQueue<>(11, Comparator.comparing(Route::getDistance, Comparator.reverseOrder()));
     }
 
     public Route<T> findRoute(T start, T end, double minimumDistance, double maximumDistance) {
-        try (ProgressBar pb = new ProgressBarBuilder()
-                .setTaskName("SometimesVisitTwiceRouter")
-                .setInitialMax((long) maximumDistance)
-                .setMaxRenderedLength(160)
-                .setStyle(ProgressBarStyle.ASCII)
-                .build()) {
-            // sort working routes from longest to shortest
-
+        try (ProgressBar pb = new ProgressBar("SometimesVisitTwiceRouter", (long) minimumDistance)) {
             Route<T> longestRoute = new SometimesVisitTwiceRoute<>(start);
             workingRoutes.add(longestRoute);
 
@@ -58,8 +57,7 @@ public class SometimesVisitTwiceRouter<T extends Node> implements Router<T> {
                     // a route is complete if it meets the distance constraints and ends
                     // with the requested node
                     if (routeWithConnectionAdded.getDistance() >= minimumDistance &&
-                            routeWithConnectionAdded.getDistance() <= maximumDistance &&
-                            nextNode.equals(end)) {
+                            nextNode.distanceTo(end) < maximumDistance - minimumDistance) {
                         return routeWithConnectionAdded;
                         // a route is considered infeasible if it exceeds the distance constraints
                         // or has too many nodes

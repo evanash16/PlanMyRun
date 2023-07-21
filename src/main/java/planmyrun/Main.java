@@ -1,26 +1,19 @@
 package planmyrun;
 
-import org.openstreetmap.gui.jmapviewer.*;
-import org.openstreetmap.gui.jmapviewer.interfaces.TileLoader;
-import org.openstreetmap.gui.jmapviewer.interfaces.TileSource;
-import org.openstreetmap.gui.jmapviewer.tilesources.BingAerialTileSource;
-import org.openstreetmap.gui.jmapviewer.tilesources.OsmTileSource;
 import planmyrun.dao.OverpassDao;
 import planmyrun.dao.OverpassDaoImpl;
 import planmyrun.graph.Graph;
 import planmyrun.graph.MutableGraph;
 import planmyrun.graph.SimpleGraph;
 import planmyrun.graph.node.EarthNode;
-import planmyrun.graph.node.SimpleNode;
 import planmyrun.model.osm.Element;
-import planmyrun.model.osm.Node;
 import planmyrun.model.osm.QueryResult;
 import planmyrun.model.osm.Way;
 import planmyrun.route.Route;
 import planmyrun.router.Router;
 import planmyrun.router.SometimesVisitTwiceRouter;
+import planmyrun.ui.RouteVisualizer;
 
-import javax.swing.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -31,6 +24,8 @@ import java.util.stream.Collectors;
 public class Main {
 
     public static void main(final String[] args) {
+        final RouteVisualizer routeVisualizer = new RouteVisualizer();
+
         final Graph<EarthNode> graph = buildGraphFromOSMExport();
         final double lat = 35.2586027;
         final double lon = -120.6360669;
@@ -40,16 +35,9 @@ public class Main {
                 .orElseThrow(RuntimeException::new);
 
         final Router<EarthNode> router = new SometimesVisitTwiceRouter<>();
-        final Route<EarthNode> route = router.findRoute(startingPoint, startingPoint, 40000, 41000);
-
-        if (route == null) {
-            return;
-        }
-
-        System.out.printf("%f m%n", route.getDistance());
-        System.out.println(route.getNodes().stream()
-                .map(node -> String.format("(%f, %f)", node.getLat(), node.getLon()))
-                .collect(Collectors.joining(" -> ")));
+        final Route<EarthNode> route = router.findRoute(startingPoint, startingPoint, 40000, 45000);
+        routeVisualizer.setRouteToVisualize(route);
+        routeVisualizer.setVisible(true);
     }
 
     private static Graph<EarthNode> buildGraphFromOSMExport() {

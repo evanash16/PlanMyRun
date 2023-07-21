@@ -34,6 +34,7 @@ public class SometimesVisitTwiceRoute<T extends Node> extends SimpleRoute<T> {
         return visited.contains(node);
     }
 
+    @Override
     public SometimesVisitTwiceRoute<T> shallowClone() {
         return new SometimesVisitTwiceRoute<>(new ArrayList<>(getNodes()), getDistance(), new HashSet<>(this.visited));
     }

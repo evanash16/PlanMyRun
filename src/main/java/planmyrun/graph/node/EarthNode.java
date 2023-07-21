@@ -41,8 +41,6 @@ public class EarthNode implements MutableNode {
                             "Cannot calculate distance between a node of type %s and a node of type %s",
                             getClass().getName(),
                             node.getClass().getName()));
-        } else if (!this.getConnections().contains(node)) {
-            throw new IllegalArgumentException("Cannot calculate distance to a node which is not connected to this one.");
         }
 
         return this.distanceCache.computeIfAbsent(node, other -> this.distanceTo((EarthNode) other));

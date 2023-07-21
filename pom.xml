@@ -4,6 +4,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <repositories>
+        <repository>
+            <id>josm</id>
+            <url>https://josm.openstreetmap.de/nexus/content/repositories/releases/</url>
+        </repository>
+    </repositories>
+
     <groupId>evan.ashley</groupId>
     <artifactId>PlanMyRun</artifactId>
     <version>1.0.0</version>
@@ -61,7 +68,13 @@
         <dependency>
             <groupId>me.tongfei</groupId>
             <artifactId>progressbar</artifactId>
-            <version>0.9.4</version>
+            <version>0.9.5</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.openstreetmap.jmapviewer/jmapviewer -->
+        <dependency>
+            <groupId>org.openstreetmap.jmapviewer</groupId>
+            <artifactId>jmapviewer</artifactId>
+            <version>2.16</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/junit/junit -->
