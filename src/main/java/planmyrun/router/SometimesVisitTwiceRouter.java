@@ -1,9 +1,6 @@
 package planmyrun.router;
 
 import me.tongfei.progressbar.ProgressBar;
-import me.tongfei.progressbar.ProgressBarBuilder;
-import me.tongfei.progressbar.ProgressBarStyle;
-import planmyrun.graph.node.EarthNode;
 import planmyrun.graph.node.Node;
 import planmyrun.route.Route;
 import planmyrun.route.SometimesVisitTwiceRoute;

@@ -43,11 +43,15 @@ public class RouteVisualizer extends JFrame {
     }
 
     public void setRouteToVisualize(final Route<EarthNode> route) {
-        this.routeToVisualize = route;
+        if (route != null && !route.equals(routeToVisualize)) {
+            this.routeToVisualize = route.shallowClone();
+            this.repaint();
+        }
     }
 
     private void visualizeRoute(final Route<EarthNode> route) {
-        jMapViewer.removeAll();
+        jMapViewer.removeAllMapMarkers();
+        jMapViewer.removeAllMapPolygons();
         final EarthNode first = route.getNodes().get(0);
         final EarthNode last = route.getNodes().get(route.getNodes().size() - 1);
 

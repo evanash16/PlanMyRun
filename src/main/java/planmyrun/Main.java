@@ -9,7 +9,6 @@ import planmyrun.graph.node.EarthNode;
 import planmyrun.model.osm.Element;
 import planmyrun.model.osm.QueryResult;
 import planmyrun.model.osm.Way;
-import planmyrun.route.Route;
 import planmyrun.router.Router;
 import planmyrun.router.SometimesVisitTwiceRouter;
 import planmyrun.ui.RouteVisualizer;
@@ -35,8 +34,16 @@ public class Main {
                 .orElseThrow(RuntimeException::new);
 
         final Router<EarthNode> router = new SometimesVisitTwiceRouter<>();
-        final Route<EarthNode> route = router.findRoute(startingPoint, startingPoint, 40000, 45000);
-        routeVisualizer.setRouteToVisualize(route);
+
+        new Thread(() -> router.findRoute(startingPoint, startingPoint, 40000, 45000)).start();
+        new Thread(() -> {
+            while (true) {
+                router.getWorkingRoutes().stream()
+                        .findFirst()
+                        .ifPresent(routeVisualizer::setRouteToVisualize);
+            }
+        }).start();
+
         routeVisualizer.setVisible(true);
     }
 
