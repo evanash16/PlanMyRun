@@ -8,17 +8,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class SometimesVisitTwiceRoute<T extends Node> extends SimpleRoute<T> {
+public class VisitAwareRoute<T extends Node> extends SimpleRoute<T> {
 
     private final Set<T> visited;
 
-    public SometimesVisitTwiceRoute(final T node) {
+    public VisitAwareRoute(final T node) {
         super(node);
 
         visited = new HashSet<>(Collections.singletonList(node));
     }
 
-    private SometimesVisitTwiceRoute(final List<T> nodes, final double distance, final Set<T> visited) {
+    private VisitAwareRoute(final List<T> nodes, final double distance, final Set<T> visited) {
         super(nodes, distance);
 
         this.visited = visited;
@@ -35,7 +35,7 @@ public class SometimesVisitTwiceRoute<T extends Node> extends SimpleRoute<T> {
     }
 
     @Override
-    public SometimesVisitTwiceRoute<T> shallowClone() {
-        return new SometimesVisitTwiceRoute<>(new ArrayList<>(getNodes()), getDistance(), new HashSet<>(this.visited));
+    public VisitAwareRoute<T> shallowClone() {
+        return new VisitAwareRoute<>(new ArrayList<>(getNodes()), getDistance(), new HashSet<>(this.visited));
     }
 }

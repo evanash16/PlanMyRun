@@ -3,7 +3,7 @@ package planmyrun.router;
 import me.tongfei.progressbar.ProgressBar;
 import planmyrun.graph.node.Node;
 import planmyrun.route.Route;
-import planmyrun.route.SometimesVisitTwiceRoute;
+import planmyrun.route.VisitAwareRoute;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,11 +25,11 @@ public class SometimesVisitTwiceRouter<T extends Node> implements Router<T> {
 
     public Route<T> findRoute(T start, T end, double minimumDistance, double maximumDistance) {
         try (ProgressBar pb = new ProgressBar("SometimesVisitTwiceRouter", (long) minimumDistance)) {
-            Route<T> longestRoute = new SometimesVisitTwiceRoute<>(start);
+            Route<T> longestRoute = new VisitAwareRoute<>(start);
             workingRoutes.add(longestRoute);
 
             while (!workingRoutes.isEmpty()) {
-                final SometimesVisitTwiceRoute<T> workingRoute = (SometimesVisitTwiceRoute<T>) workingRoutes.remove();
+                final VisitAwareRoute<T> workingRoute = (VisitAwareRoute<T>) workingRoutes.remove();
                 List<Node> unvisitedNodes = new ArrayList<>();
                 T currentNode;
 
@@ -48,7 +48,7 @@ public class SometimesVisitTwiceRouter<T extends Node> implements Router<T> {
                 backtracedNodes.forEach(workingRoute::addNode);
 
                 for (final Node nextNode : unvisitedNodes) {
-                    final SometimesVisitTwiceRoute<T> routeWithConnectionAdded = workingRoute.shallowClone();
+                    final VisitAwareRoute<T> routeWithConnectionAdded = workingRoute.shallowClone();
                     routeWithConnectionAdded.addNode((T) nextNode);
 
                     // a route is complete if it meets the distance constraints and ends
@@ -56,8 +56,8 @@ public class SometimesVisitTwiceRouter<T extends Node> implements Router<T> {
                     if (routeWithConnectionAdded.getDistance() >= minimumDistance &&
                             nextNode.distanceTo(end) < maximumDistance - minimumDistance) {
                         return routeWithConnectionAdded;
-                        // a route is considered infeasible if it exceeds the distance constraints
-                        // or has too many nodes
+                    // a route is considered infeasible if it exceeds the distance constraints
+                    // or has too many nodes
                     } else if (routeWithConnectionAdded.getDistance() > maximumDistance ||
                             routeWithConnectionAdded.getNodes().size() > MAX_DEPTH) {
                         pb.stepTo((long) routeWithConnectionAdded.getDistance());

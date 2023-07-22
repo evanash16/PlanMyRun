@@ -38,8 +38,8 @@ public class SimpleRouter<T extends Node> implements Router<T> {
                             routeWithConnectionAdded.getDistance() <= maximumDistance &&
                             nextNode.equals(end)) {
                         return routeWithConnectionAdded;
-                        // a route is considered infeasible if it exceeds the distance constraints
-                        // or has too many nodes
+                    // a route is considered infeasible if it exceeds the distance constraints
+                    // or has too many nodes
                     } else if (routeWithConnectionAdded.getDistance() > maximumDistance ||
                             routeWithConnectionAdded.getNodes().size() > MAX_DEPTH) {
                         continue;

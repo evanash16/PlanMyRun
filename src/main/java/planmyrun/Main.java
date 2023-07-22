@@ -34,7 +34,6 @@ public class Main {
                 .orElseThrow(RuntimeException::new);
 
         final Router<EarthNode> router = new SometimesVisitTwiceRouter<>();
-
         new Thread(() -> router.findRoute(startingPoint, startingPoint, 40000, 45000)).start();
         new Thread(() -> {
             while (true) {
@@ -43,7 +42,6 @@ public class Main {
                         .ifPresent(routeVisualizer::setRouteToVisualize);
             }
         }).start();
-
         routeVisualizer.setVisible(true);
     }
 
