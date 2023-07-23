@@ -1,9 +1,8 @@
 package planmyrun.dao;
 
-import com.fasterxml.jackson.core.exc.StreamReadException;
-import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import lombok.extern.log4j.Log4j2;
 import planmyrun.model.osm.QueryResult;
 
@@ -17,7 +16,8 @@ public class OverpassDaoImpl implements OverpassDao {
     private final ObjectMapper objectMapper;
 
     public OverpassDaoImpl() {
-        objectMapper = new ObjectMapper();
+        objectMapper = new ObjectMapper()
+                .registerModule(new GuavaModule());
         objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
     }
 
