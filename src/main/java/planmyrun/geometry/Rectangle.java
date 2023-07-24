@@ -8,19 +8,24 @@ import java.awt.geom.Point2D;
 import java.util.List;
 import java.util.function.BiFunction;
 
-public class Rectangle<T extends Node2D> implements Shape<T> {
+public class Rectangle implements Shape2D {
 
     @Getter
-    private final List<T> nodes;
+    private final List<Point2D.Double> points;
 
-    public Rectangle(final T nw, final T se, final BiFunction<Double, Double, T> constructor) {
-        final Point2D.Double nwAsPoint = nw.asPoint();
-        final Point2D.Double seAsPoint = se.asPoint();
+    public Rectangle(final Point2D.Double nw, final Point2D.Double se) {
+        this.points = ImmutableList.of(
+                new Point2D.Double(nw.getX(), nw.getY()), // NW
+                new Point2D.Double(se.getX(), nw.getY()), // NE
+                new Point2D.Double(se.getX(), se.getY()), // SE
+                new Point2D.Double(nw.getX(), se.getY())); // SW
+    }
 
-        this.nodes = ImmutableList.of(
-                constructor.apply(nwAsPoint.getX(), nwAsPoint.getY()), // NW
-                constructor.apply(seAsPoint.getX(), nwAsPoint.getY()), // NE
-                constructor.apply(seAsPoint.getX(), seAsPoint.getY()), // SE
-                constructor.apply(nwAsPoint.getX(), seAsPoint.getY())); // SW
+    private Rectangle(final List<Point2D.Double> points) {
+        this.points = points;
+    }
+
+    public Shape2D fromPoints(List<Point2D.Double> points) {
+        return new Rectangle(points);
     }
 }

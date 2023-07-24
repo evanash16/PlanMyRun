@@ -1,7 +1,6 @@
 package planmyrun.graph;
 
 import org.junit.Test;
-import org.junit.jupiter.params.ParameterizedTest;
 import planmyrun.TestUtil;
 import planmyrun.graph.node.EarthNode;
 import planmyrun.graph.node.SimpleNode;
@@ -21,7 +20,7 @@ public class QuadTreeGraphTest {
         quadTreeGraph.addNode(new SimpleNode(0, 0));
 
         final SimpleNode expected = new SimpleNode(0, 0);
-        final SimpleNode actual = quadTreeGraph.closestTo(new SimpleNode(0.25, 0.25));
+        final SimpleNode actual = quadTreeGraph.closestTo(new Point2D.Double(0.25, 0.25));
 
         assertThat(actual).isEqualTo(expected);
     }
@@ -31,7 +30,7 @@ public class QuadTreeGraphTest {
         final QueryableGraph<EarthNode> quadTreeGraph = buildQuadTreeGraph();
 
         final EarthNode expected = new EarthNode(0, 0);
-        final EarthNode actual = quadTreeGraph.closestTo(new EarthNode(0.25, 0.25));
+        final EarthNode actual = quadTreeGraph.closestTo(new Point2D.Double(0.25, 0.25));
 
         assertThat(actual).isEqualTo(expected);
     }
@@ -41,7 +40,7 @@ public class QuadTreeGraphTest {
         final QueryableGraph<EarthNode> quadTreeGraph = buildQuadTreeGraph();
 
         final EarthNode expected = quadTreeGraph.getNodes().get(0); // (0, 0)
-        final EarthNode actual = quadTreeGraph.closestTo(new EarthNode(-1000, -1000)); // very out of bounds
+        final EarthNode actual = quadTreeGraph.closestTo(new Point2D.Double(-1000, -1000)); // very out of bounds
 
         assertThat(actual).isEqualTo(expected);
     }

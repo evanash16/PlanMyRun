@@ -30,29 +30,28 @@ public class Main {
 
         // Broad & Islay
         final EarthNode startingPoint = new EarthNode(35.264082, -120.658134);
-        final double distance = 5_000;
+        final double minDistance = 5_000;
+        final double maxDistance = 6_000;
 
         final Router<EarthNode> circularRouter = new ShapeBasedRouter<>((start, minimumDistance) -> {
             final double degreesPerMeter = 1.0 / 111_139.0;
             final double radius = minimumDistance / (2 * Math.PI);
             final double radiusInDegrees = degreesPerMeter * radius;
 
-            final EarthNode center = new EarthNode(start.getLat() - radiusInDegrees, start.getLon());
+            final Point2D.Double center = new Point2D.Double(start.getX() - radiusInDegrees, start.getY());
 
-            return new Circle<>(center, radiusInDegrees, 100, EarthNode::new);
+            return new Circle(center, radiusInDegrees, 100);
         }, queryableGraph);
-        final Route<EarthNode> circularRoute = circularRouter.findRoute(startingPoint, startingPoint, distance, Double.MAX_VALUE);
+        final Route<EarthNode> circularRoute = circularRouter.findRoute(startingPoint, startingPoint, minDistance, maxDistance);
 
         final Router<EarthNode> rectangularRouter = new ShapeBasedRouter<>((start, minimumDistance) -> {
             final double horizontalDistance = 0.5 * minimumDistance;
             final double verticalDistance = minimumDistance - horizontalDistance;
             final double degreesPerMeter = 1.0 / 111_139.0;
 
-            final Point2D.Double startingPointAsPoint = startingPoint.asPoint();
-
-            return new Rectangle<>(startingPoint, new EarthNode(startingPointAsPoint.getX() + degreesPerMeter * (horizontalDistance / 2), startingPointAsPoint.getY() + degreesPerMeter * (verticalDistance / 2)), EarthNode::new);
+            return new Rectangle(startingPoint.asPoint(), new Point2D.Double(start.getX() + degreesPerMeter * (horizontalDistance / 2), startingPoint.asPoint().getY() + degreesPerMeter * (verticalDistance / 2)));
         }, queryableGraph);
-        final Route<EarthNode> rectangularRoute = rectangularRouter.findRoute(startingPoint, startingPoint, distance, Double.MAX_VALUE);
+        final Route<EarthNode> rectangularRoute = rectangularRouter.findRoute(startingPoint, startingPoint, minDistance, maxDistance);
 
         System.out.printf("Circle distance: %fm%n", circularRoute.getDistance());
         routeVisualizer.addRoute(circularRoute);

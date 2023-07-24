@@ -22,8 +22,8 @@ public class QuadTreeGraph<T extends Node2D> extends SimpleGraph<T> implements Q
         quadTree.insert(node);
     }
 
-    public T closestTo(final T node) {
-        return quadTree.closestTo(node);
+    public T closestTo(final Point2D.Double point) {
+        return quadTree.closestTo(point);
     }
 }
 
@@ -65,17 +65,16 @@ class QuadTree<T extends Node2D> {
         this.direction = direction;
     }
 
-    private boolean encapsulates(final T node) {
-        final Point2D.Double nodeAsPoint = node.asPoint();
+    private boolean encapsulates(final Point2D.Double point) {
         switch (this.direction) {
             case NORTH_EAST:
-                return nodeAsPoint.getX() > this.x0 && nodeAsPoint.getY() < this.y1;
+                return point.getX() > this.x0 && point.getY() < this.y1;
             case SOUTH_EAST:
-                return nodeAsPoint.getX() > this.x0 && nodeAsPoint.getY() > this.y0;
+                return point.getX() > this.x0 && point.getY() > this.y0;
             case SOUTH_WEST:
-                return nodeAsPoint.getX() < this.x1 && nodeAsPoint.getY() > this.y0;
+                return point.getX() < this.x1 && point.getY() > this.y0;
             case NORTH_WEST:
-                return nodeAsPoint.getX() < this.x1 && nodeAsPoint.getY() < this.y1;
+                return point.getX() < this.x1 && point.getY() < this.y1;
             default:
                 return true; // we should not get here, but if we do
         }
@@ -92,7 +91,7 @@ class QuadTree<T extends Node2D> {
         }
 
         ImmutableList.of(this.ne, this.se, this.sw, this.nw).stream()
-                .filter(qt -> qt.encapsulates(node))
+                .filter(qt -> qt.encapsulates(node.asPoint()))
                 .findFirst()
                 .ifPresent(qt -> qt.insert(node));
     }
@@ -123,7 +122,7 @@ class QuadTree<T extends Node2D> {
         this.nw = new QuadTree<>(this.x0, this.y0, xMid, yMid, this.depth + 1, Direction.NORTH_WEST);
 
         this.nodes.forEach(node -> ImmutableList.of(this.ne, this.se, this.sw, this.nw).stream()
-                .filter(qt -> qt.encapsulates(node))
+                .filter(qt -> qt.encapsulates(node.asPoint()))
                 .findFirst()
                 .ifPresent(qt -> qt.insert(node)));
 
@@ -131,17 +130,17 @@ class QuadTree<T extends Node2D> {
         this.isSubdivided = true;
     }
 
-    public T closestTo(final T node) {
+    public T closestTo(final Point2D.Double point) {
         if (!this.isSubdivided) {
             return nodes.stream()
-                    .min(Comparator.comparingDouble(n -> n.distanceTo(node)))
+                    .min(Comparator.comparingDouble(n -> n.asPoint().distance(point)))
                     .orElse(null);
         }
 
         return ImmutableList.of(this.ne, this.se, this.sw, this.nw).stream()
-                .filter(qt -> qt.encapsulates(node))
+                .filter(qt -> qt.encapsulates(point))
                 .findFirst()
-                .map(qt -> qt.closestTo(node))
+                .map(qt -> qt.closestTo(point))
                 .orElse(null);
     }
 

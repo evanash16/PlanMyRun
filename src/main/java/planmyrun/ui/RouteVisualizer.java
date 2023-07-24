@@ -25,17 +25,10 @@ public class RouteVisualizer extends JFrame {
     private static final List<Color> COLORS = ImmutableList.of(
             Color.RED,
             Color.ORANGE,
-            Color.YELLOW,
             Color.GREEN,
             Color.BLUE,
             Color.CYAN,
-            Color.MAGENTA,
-            Color.PINK,
-            Color.WHITE,
-            Color.BLACK,
-            Color.DARK_GRAY,
-            Color.GRAY,
-            Color.LIGHT_GRAY);
+            Color.MAGENTA);
 
     public RouteVisualizer() {
         routesToVisualize = new HashSet<>();
