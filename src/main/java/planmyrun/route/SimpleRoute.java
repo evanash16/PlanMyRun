@@ -1,13 +1,18 @@
 package planmyrun.route;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import planmyrun.graph.node.Node;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@EqualsAndHashCode
 public class SimpleRoute<T extends Node> implements MutableRoute<T> {
 
+    @Getter
     private final List<T> nodes;
+    @Getter
     private double distance;
 
     public SimpleRoute(final T node) {
@@ -22,17 +27,9 @@ public class SimpleRoute<T extends Node> implements MutableRoute<T> {
         this.distance = distance;
     }
 
-    public List<T> getNodes() {
-        return this.nodes;
-    }
-
     public void addNode(final T node) {
         this.distance += nodes.get(nodes.size() - 1).distanceTo(node);
         this.nodes.add(node);
-    }
-
-    public double getDistance() {
-        return this.distance;
     }
 
     public SimpleRoute<T> shallowClone() {

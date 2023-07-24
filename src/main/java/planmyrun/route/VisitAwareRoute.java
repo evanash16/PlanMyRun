@@ -1,5 +1,6 @@
 package planmyrun.route;
 
+import lombok.EqualsAndHashCode;
 import planmyrun.graph.node.Node;
 
 import java.util.ArrayList;
@@ -8,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+@EqualsAndHashCode(callSuper = true)
 public class VisitAwareRoute<T extends Node> extends SimpleRoute<T> {
 
     private final Set<T> visited;

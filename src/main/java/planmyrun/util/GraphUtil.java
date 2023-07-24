@@ -7,10 +7,12 @@ import planmyrun.graph.Graph;
 import planmyrun.graph.MutableGraph;
 import planmyrun.graph.SimpleGraph;
 import planmyrun.graph.node.EarthNode;
+import planmyrun.graph.node.Node2D;
 import planmyrun.model.osm.Element;
 import planmyrun.model.osm.QueryResult;
 import planmyrun.model.osm.Way;
 
+import java.awt.geom.Point2D;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
@@ -52,5 +54,21 @@ public class GraphUtil {
         earthNodesByNodeId.values().forEach(graph::addNode);
 
         return graph;
+    }
+
+    public <T extends Node2D> Point2D.Double[] getBoundingBox(final Graph<T> graph) {
+        double x0 = Double.MAX_VALUE;
+        double y0 = Double.MAX_VALUE;
+        double x1 = -Double.MAX_VALUE;
+        double y1 = -Double.MAX_VALUE;
+        for (T node : graph.getNodes()) {
+            final Point2D.Double nodeAsPoint = node.asPoint();
+            x0 = Math.min(x0, nodeAsPoint.getX());
+            y0 = Math.min(y0, nodeAsPoint.getY());
+            x1 = Math.max(x1, nodeAsPoint.getX());
+            y1 = Math.max(y1, nodeAsPoint.getY());
+        }
+
+        return new Point2D.Double[] {new Point2D.Double(x0, y0), new Point2D.Double(x1, y1)};
     }
 }

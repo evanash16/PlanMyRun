@@ -1,18 +1,24 @@
 package planmyrun.graph.node;
 
-import sun.java2d.pipe.SpanShapeRenderer;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
+import java.awt.geom.Point2D;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
-public class SimpleNode implements MutableNode {
+@EqualsAndHashCode(exclude = { "connections" })
+public class SimpleNode implements MutableNode, Node2D {
 
+    @Getter
     private final double x;
+    @Getter
     private final double y;
-    private final Set<Node> connections;
+    @Getter
+    private final Collection<Node> connections;
+
     private final Map<Node, Double> distanceCache;
 
     public SimpleNode(final double x, final double y) {
@@ -20,10 +26,6 @@ public class SimpleNode implements MutableNode {
         this.y = y;
         this.connections = new HashSet<>();
         this.distanceCache = new HashMap<>();
-    }
-
-    public Collection<Node> getConnections() {
-        return this.connections;
     }
 
     public void addConnection(final Node node) {
@@ -52,11 +54,7 @@ public class SimpleNode implements MutableNode {
         return Math.sqrt(Math.pow(node.getX() - this.getX(), 2) + Math.pow(node.getY() - this.getY(), 2));
     }
 
-    public double getX() {
-        return this.x;
-    }
-
-    public double getY() {
-        return this.y;
+    public Point2D.Double asPoint() {
+        return new Point2D.Double(this.x, this.y);
     }
 }

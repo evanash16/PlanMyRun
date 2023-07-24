@@ -1,18 +1,25 @@
 package planmyrun.graph.node;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+
+import java.awt.geom.Point2D;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
-public class EarthNode implements MutableNode {
+@EqualsAndHashCode(exclude = { "connections" })
+public class EarthNode implements MutableNode, Node2D {
 
     private static final double EARTH_RADIUS_IN_METERS = 6_371_000.0;
 
+    @Getter
     private final double lat;
+    @Getter
     private final double lon;
-    private final Set<Node> connections;
+    @Getter
+    private final Collection<Node> connections;
     private final Map<Node, Double> distanceCache;
 
     public EarthNode(final double lat, final double lon) {
@@ -20,10 +27,6 @@ public class EarthNode implements MutableNode {
         this.lon = lon;
         this.connections = new HashSet<>();
         this.distanceCache = new HashMap<>();
-    }
-
-    public Collection<Node> getConnections() {
-        return this.connections;
     }
 
     public void addConnection(final Node node) {
@@ -56,12 +59,7 @@ public class EarthNode implements MutableNode {
         return 2 * EARTH_RADIUS_IN_METERS * Math.atan(Math.sqrt(a) / Math.sqrt(1 - a));
     }
 
-    public double getLat() {
-        return this.lat;
+    public Point2D.Double asPoint() {
+        return new Point2D.Double(this.lat, this.lon);
     }
-
-    public double getLon() {
-        return this.lon;
-    }
-
 }
