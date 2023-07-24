@@ -55,9 +55,9 @@ public class Main {
         final Route<EarthNode> rectangularRoute = rectangularRouter.findRoute(startingPoint, startingPoint, distance, Double.MAX_VALUE);
 
         System.out.printf("Circle distance: %fm%n", circularRoute.getDistance());
-        routeVisualizer.setRouteToVisualize(circularRoute);
+        routeVisualizer.addRoute(circularRoute);
         System.out.printf("Rectangle distance: %fm%n", rectangularRoute.getDistance());
-        routeVisualizer.setRouteToVisualize(rectangularRoute);
+        routeVisualizer.addRoute(rectangularRoute);
         routeVisualizer.setVisible(true);
     }
 

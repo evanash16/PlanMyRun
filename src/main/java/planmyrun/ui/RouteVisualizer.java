@@ -1,10 +1,8 @@
 package planmyrun.ui;
 
-import org.openstreetmap.gui.jmapviewer.Coordinate;
-import org.openstreetmap.gui.jmapviewer.JMapViewer;
-import org.openstreetmap.gui.jmapviewer.MapMarkerDot;
-import org.openstreetmap.gui.jmapviewer.MapPolygonImpl;
-import org.openstreetmap.gui.jmapviewer.OsmTileLoader;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import org.openstreetmap.gui.jmapviewer.*;
 import planmyrun.graph.node.EarthNode;
 import planmyrun.route.Route;
 
@@ -13,16 +11,35 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class RouteVisualizer extends JFrame {
 
     private final JMapViewer jMapViewer;
-    private transient Route<EarthNode> routeToVisualize;
+    private final transient Set<Route<EarthNode>> routesToVisualize;
+    private static final List<Color> COLORS = ImmutableList.of(
+            Color.RED,
+            Color.ORANGE,
+            Color.YELLOW,
+            Color.GREEN,
+            Color.BLUE,
+            Color.CYAN,
+            Color.MAGENTA,
+            Color.PINK,
+            Color.WHITE,
+            Color.BLACK,
+            Color.DARK_GRAY,
+            Color.GRAY,
+            Color.LIGHT_GRAY);
 
     public RouteVisualizer() {
+        routesToVisualize = new HashSet<>();
+
         jMapViewer = new JMapViewer();
         jMapViewer.setTileLoader(new OsmTileLoader(jMapViewer));
         jMapViewer.setDisplayToFitMapPolygons();
@@ -37,26 +54,38 @@ public class RouteVisualizer extends JFrame {
     public void paint(final Graphics g) {
         super.paint(g);
 
-        if (routeToVisualize != null) {
-            visualizeRoute(routeToVisualize);
-        }
+        this.visualizeRoutes();
     }
 
-    public void setRouteToVisualize(final Route<EarthNode> route) {
-        if (route != null && !route.equals(routeToVisualize)) {
-            this.routeToVisualize = route.shallowClone();
+    public void addRoute(final Route<EarthNode> route) {
+        if (route != null) {
+            this.routesToVisualize.add(route.shallowClone());
             this.repaint();
         }
     }
 
-    private void visualizeRoute(final Route<EarthNode> route) {
-        jMapViewer.removeAllMapMarkers();
-        jMapViewer.removeAllMapPolygons();
+    public void clearRoutes() {
+        this.routesToVisualize.clear();
+    }
+
+    private void visualizeRoutes() {
+        this.jMapViewer.removeAllMapMarkers();
+        this.jMapViewer.removeAllMapPolygons();
+        this.jMapViewer.removeAllMapRectangles();
+
+        final ImmutableMap<Route<EarthNode>, Color> colorsByEarthNode = this.routesToVisualize.stream()
+                .collect(ImmutableMap.toImmutableMap(Function.identity(), n -> COLORS.get(Math.abs(n.hashCode() % COLORS.size()))));
+        colorsByEarthNode.forEach(this::visualizeRoute);
+
+        this.jMapViewer.setDisplayToFitMapPolygons();
+    }
+
+    private void visualizeRoute(final Route<EarthNode> route, final Color color) {
         final EarthNode first = route.getNodes().get(0);
         final EarthNode last = route.getNodes().get(route.getNodes().size() - 1);
 
-        jMapViewer.addMapMarker(new MapMarkerDot(Color.GREEN, first.getLat(), first.getLon()));
-        jMapViewer.addMapMarker(new MapMarkerDot(Color.RED, last.getLat(), last.getLon()));
+        this.jMapViewer.addMapMarker(new MapMarkerDot(Color.GREEN, first.getLat(), first.getLon()));
+        this.jMapViewer.addMapMarker(new MapMarkerDot(Color.RED, last.getLat(), last.getLon()));
 
         final List<Coordinate> pathForward = route.getNodes().stream()
                 .map(node -> new Coordinate(node.getLat(), node.getLon()))
@@ -69,7 +98,11 @@ public class RouteVisualizer extends JFrame {
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
 
-        jMapViewer.addMapPolygon(new MapPolygonImpl(coordinates));
-        jMapViewer.setDisplayToFitMapPolygons();
+        final Style defaultStyle = MapPolygonImpl.getDefaultStyle();
+        this.jMapViewer.addMapPolygon(new MapPolygonImpl(
+                null, // layer
+                null, // name
+                coordinates,
+                new Style(color, defaultStyle.getBackColor(), defaultStyle.getStroke(), defaultStyle.getFont())));
     }
 }
