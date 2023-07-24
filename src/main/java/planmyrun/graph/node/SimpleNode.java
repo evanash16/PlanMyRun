@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-@EqualsAndHashCode(exclude = { "connections" })
+@EqualsAndHashCode(exclude = { "connections", "distanceCache" })
 public class SimpleNode implements MutableNode, Node2D {
 
     @Getter

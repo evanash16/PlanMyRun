@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-@EqualsAndHashCode(exclude = { "connections" })
+@EqualsAndHashCode(exclude = { "connections", "distanceCache" })
 public class EarthNode implements MutableNode, Node2D {
 
     private static final double EARTH_RADIUS_IN_METERS = 6_371_000.0;

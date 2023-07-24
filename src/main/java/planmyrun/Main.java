@@ -1,12 +1,15 @@
 package planmyrun;
 
+import planmyrun.geometry.Circle;
+import planmyrun.geometry.Rectangle;
 import planmyrun.graph.Graph;
 import planmyrun.graph.MutableGraph;
 import planmyrun.graph.QuadTreeGraph;
 import planmyrun.graph.QueryableGraph;
 import planmyrun.graph.node.EarthNode;
+import planmyrun.route.Route;
 import planmyrun.router.Router;
-import planmyrun.router.SometimesVisitTwiceRouter;
+import planmyrun.router.ShapeBasedRouter;
 import planmyrun.ui.RouteVisualizer;
 import planmyrun.util.GraphUtil;
 
@@ -21,26 +24,40 @@ public class Main {
         final RouteVisualizer routeVisualizer = new RouteVisualizer();
 
         final Graph<EarthNode> graph = buildGraphFromOSMExport();
-        final double lat = 35.2586027;
-        final double lon = -120.6360669;
-        final EarthNode startingPoint = graph.getNodes().stream()
-                .filter(node -> node.getLat() == lat && node.getLon() == lon)
-                .findFirst()
-                .orElseThrow(RuntimeException::new);
-
         final Point2D.Double[] graphBoundingBox = GraphUtil.getBoundingBox(graph);
-        final MutableGraph<EarthNode> queryableGraph = new QuadTreeGraph<>(graphBoundingBox[0].getX(), graphBoundingBox[0].getY(), graphBoundingBox[1].getX(), graphBoundingBox[1].getY());
-        graph.getNodes().forEach(queryableGraph::addNode);
+        final QueryableGraph<EarthNode> queryableGraph = new QuadTreeGraph<>(graphBoundingBox[0].getX(), graphBoundingBox[0].getY(), graphBoundingBox[1].getX(), graphBoundingBox[1].getY());
+        graph.getNodes().forEach(((MutableGraph<EarthNode>) queryableGraph)::addNode);
 
-        final Router<EarthNode> router = new SometimesVisitTwiceRouter<>();
-        new Thread(() -> router.findRoute(startingPoint, startingPoint, 40000, 45000)).start();
-        new Thread(() -> {
-            while (true) {
-                router.getWorkingRoutes().stream()
-                        .findFirst()
-                        .ifPresent(routeVisualizer::setRouteToVisualize);
-            }
-        }).start();
+        // Broad & Islay
+        final EarthNode startingPoint = new EarthNode(35.264082, -120.658134);
+        final double distance = 5_000;
+
+        final Router<EarthNode> circularRouter = new ShapeBasedRouter<>((start, minimumDistance) -> {
+            final double degreesPerMeter = 1.0 / 111_139.0;
+            final double radius = minimumDistance / (2 * Math.PI);
+            final double radiusInDegrees = degreesPerMeter * radius;
+
+            final EarthNode center = new EarthNode(start.getLat() - radiusInDegrees, start.getLon());
+
+            return new Circle<>(center, radiusInDegrees, 100, EarthNode::new);
+        }, queryableGraph);
+        final Route<EarthNode> circularRoute = circularRouter.findRoute(startingPoint, startingPoint, distance, Double.MAX_VALUE);
+
+        final Router<EarthNode> rectangularRouter = new ShapeBasedRouter<>((start, minimumDistance) -> {
+            final double horizontalDistance = 0.5 * minimumDistance;
+            final double verticalDistance = minimumDistance - horizontalDistance;
+            final double degreesPerMeter = 1.0 / 111_139.0;
+
+            final Point2D.Double startingPointAsPoint = startingPoint.asPoint();
+
+            return new Rectangle<>(startingPoint, new EarthNode(startingPointAsPoint.getX() + degreesPerMeter * (horizontalDistance / 2), startingPointAsPoint.getY() + degreesPerMeter * (verticalDistance / 2)), EarthNode::new);
+        }, queryableGraph);
+        final Route<EarthNode> rectangularRoute = rectangularRouter.findRoute(startingPoint, startingPoint, distance, Double.MAX_VALUE);
+
+        System.out.printf("Circle distance: %fm%n", circularRoute.getDistance());
+        routeVisualizer.setRouteToVisualize(circularRoute);
+        System.out.printf("Rectangle distance: %fm%n", rectangularRoute.getDistance());
+        routeVisualizer.setRouteToVisualize(rectangularRoute);
         routeVisualizer.setVisible(true);
     }
 

@@ -1,11 +1,12 @@
 package planmyrun.graph;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.MoreCollectors;
 import planmyrun.graph.node.Node2D;
 
 import java.awt.geom.Point2D;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 public class QuadTreeGraph<T extends Node2D> extends SimpleGraph<T> implements QueryableGraph<T> {
 
