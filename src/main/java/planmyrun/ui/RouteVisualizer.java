@@ -2,7 +2,15 @@ package planmyrun.ui;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import org.openstreetmap.gui.jmapviewer.*;
+import de.westnordost.osmapi.map.data.BoundingBox;
+import org.openstreetmap.gui.jmapviewer.Coordinate;
+import org.openstreetmap.gui.jmapviewer.JMapViewer;
+import org.openstreetmap.gui.jmapviewer.MapMarkerDot;
+import org.openstreetmap.gui.jmapviewer.MapPolygonImpl;
+import org.openstreetmap.gui.jmapviewer.MapRectangleImpl;
+import org.openstreetmap.gui.jmapviewer.OsmTileLoader;
+import org.openstreetmap.gui.jmapviewer.Style;
+import org.openstreetmap.gui.jmapviewer.interfaces.MapRectangle;
 import planmyrun.graph.node.EarthNode;
 import planmyrun.route.Route;
 
@@ -35,7 +43,6 @@ public class RouteVisualizer extends JFrame {
 
         jMapViewer = new JMapViewer();
         jMapViewer.setTileLoader(new OsmTileLoader(jMapViewer));
-        jMapViewer.setDisplayToFitMapPolygons();
 
         setSize(500, 500);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -69,8 +76,6 @@ public class RouteVisualizer extends JFrame {
         final ImmutableMap<Route<EarthNode>, Color> colorsByEarthNode = this.routesToVisualize.stream()
                 .collect(ImmutableMap.toImmutableMap(Function.identity(), n -> COLORS.get(Math.abs(n.hashCode() % COLORS.size()))));
         colorsByEarthNode.forEach(this::visualizeRoute);
-
-        this.jMapViewer.setDisplayToFitMapPolygons();
     }
 
     private void visualizeRoute(final Route<EarthNode> route, final Color color) {
@@ -97,5 +102,20 @@ public class RouteVisualizer extends JFrame {
                 null, // name
                 coordinates,
                 new Style(color, defaultStyle.getBackColor(), defaultStyle.getStroke(), defaultStyle.getFont())));
+    }
+
+    public void displayToFitBoundingBox(final BoundingBox boundingBox) {
+        final MapRectangle boundingBoxAsRectangle = new MapRectangleImpl(
+                new Coordinate(boundingBox.getMinLatitude(), boundingBox.getMinLongitude()),
+                new Coordinate(boundingBox.getMaxLatitude(), boundingBox.getMaxLongitude()));
+
+        final List<MapRectangle> mapRectangles = this.jMapViewer.getMapRectangleList();
+        this.jMapViewer.removeAllMapRectangles();
+
+        this.jMapViewer.addMapRectangle(boundingBoxAsRectangle);
+        this.jMapViewer.setDisplayToFitMapRectangles();
+        this.jMapViewer.removeMapRectangle(boundingBoxAsRectangle);
+
+        mapRectangles.forEach(this.jMapViewer::addMapRectangle);
     }
 }

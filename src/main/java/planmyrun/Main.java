@@ -27,6 +27,9 @@ public class Main {
 
         final OverpassDao overpassDao = new OverpassDaoImpl();
         final BoundingBox boundingBox = overpassDao.getBoundingBox("US", "CA", "San Luis Obispo");
+
+        routeVisualizer.displayToFitBoundingBox(boundingBox);
+
         final QueryResult queryResult = overpassDao.getHighwaysWithinArea(boundingBox);
         final Graph<EarthNode> graph = GraphUtil.buildGraphFromQueryResult(queryResult);
 
