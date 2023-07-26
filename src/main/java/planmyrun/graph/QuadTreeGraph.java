@@ -29,7 +29,6 @@ public class QuadTreeGraph<T extends Node2D> extends SimpleGraph<T> implements Q
 
 class QuadTree<T extends Node2D> {
 
-    private static final int MAX_DEPTH = 2000;
     private static final int MAX_NODES = 5;
 
     private List<T> nodes;
@@ -81,7 +80,7 @@ class QuadTree<T extends Node2D> {
     }
 
     public void insert(final T node) {
-        if (nodes != null && (nodes.size() < MAX_NODES || this.depth >= MAX_DEPTH)) {
+        if (nodes != null && (nodes.size() < MAX_NODES)) {
             this.nodes.add(node);
             return;
         }
@@ -101,8 +100,8 @@ class QuadTree<T extends Node2D> {
             return;
         }
 
-        double xMid = x0 + x1 / 2;
-        double yMid = y0 + y1 / 2;
+        double xMid = (x0 + x1) / 2;
+        double yMid = (y0 + y1) / 2;
 
         /*
          x0, y0 ----- xMid, y0 ----- x1, y0
