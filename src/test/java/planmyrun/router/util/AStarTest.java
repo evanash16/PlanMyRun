@@ -7,7 +7,6 @@ import planmyrun.TestUtil;
 import planmyrun.graph.Graph;
 import planmyrun.graph.node.EarthNode;
 
-import java.io.IOException;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -15,8 +14,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class AStarTest {
 
     @Test
-    public void testFindPath() throws IOException {
-        final Graph<EarthNode> testGraph = TestUtil.loadTestGraph("simpleGraph.json");
+    public void testFindPath() {
+        final Graph<EarthNode> testGraph = TestUtil.buildTestGraph();
 
         final List<EarthNode> nodes = testGraph.getNodes();
         final EarthNode start = nodes.get(0); // (0, 0)
@@ -31,8 +30,8 @@ public class AStarTest {
     }
 
     @Test
-    public void testFindPathWithNoPath() throws IOException {
-        final Graph<EarthNode> testGraph = TestUtil.loadTestGraph("simpleGraph.json");
+    public void testFindPathWithNoPath() {
+        final Graph<EarthNode> testGraph = TestUtil.buildTestGraph();
 
         final List<EarthNode> nodes = testGraph.getNodes();
         final EarthNode start = nodes.get(0); // (0, 0)

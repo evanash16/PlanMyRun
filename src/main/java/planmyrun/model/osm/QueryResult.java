@@ -1,15 +1,17 @@
 package planmyrun.model.osm;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import de.westnordost.osmapi.map.data.BoundingBox;
+import de.westnordost.osmapi.map.data.Node;
+import de.westnordost.osmapi.map.data.Relation;
+import de.westnordost.osmapi.map.data.Way;
 import org.immutables.value.Value;
 
 import java.util.List;
 
 @Value.Immutable
-@JsonDeserialize(as = ImmutableQueryResult.class)
 public interface QueryResult {
-
-    @JsonProperty("elements")
-    List<Element> getElements();
+    List<BoundingBox> getBoundingBoxes();
+    List<Node> getNodes();
+    List<Way> getWays();
+    List<Relation> getRelations();
 }

@@ -45,8 +45,8 @@ public class QuadTreeGraphTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    private QueryableGraph<EarthNode> buildQuadTreeGraph() throws IOException {
-        final Graph<EarthNode> testGraph = TestUtil.loadTestGraph("simpleGraph.json");
+    private QueryableGraph<EarthNode> buildQuadTreeGraph() {
+        final Graph<EarthNode> testGraph = TestUtil.buildTestGraph();
         final Point2D.Double[] boundingBox = GraphUtil.getBoundingBox(testGraph);
 
         final QuadTreeGraph<EarthNode> testQuadTreeGraph = new QuadTreeGraph<>(

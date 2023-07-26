@@ -1,5 +1,8 @@
 package planmyrun;
 
+import de.westnordost.osmapi.map.data.BoundingBox;
+import planmyrun.dao.OverpassDao;
+import planmyrun.dao.OverpassDaoImpl;
 import planmyrun.geometry.Circle;
 import planmyrun.geometry.Rectangle;
 import planmyrun.graph.Graph;
@@ -7,6 +10,7 @@ import planmyrun.graph.MutableGraph;
 import planmyrun.graph.QuadTreeGraph;
 import planmyrun.graph.QueryableGraph;
 import planmyrun.graph.node.EarthNode;
+import planmyrun.model.osm.QueryResult;
 import planmyrun.route.Route;
 import planmyrun.router.Router;
 import planmyrun.router.ShapeBasedRouter;
@@ -14,16 +18,18 @@ import planmyrun.ui.RouteVisualizer;
 import planmyrun.util.GraphUtil;
 
 import java.awt.geom.Point2D;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UncheckedIOException;
 
 public class Main {
 
     public static void main(final String[] args) {
         final RouteVisualizer routeVisualizer = new RouteVisualizer();
+        routeVisualizer.setVisible(true);
 
-        final Graph<EarthNode> graph = buildGraphFromOSMExport();
+        final OverpassDao overpassDao = new OverpassDaoImpl();
+        final BoundingBox boundingBox = overpassDao.getBoundingBox("US", "CA", "San Luis Obispo");
+        final QueryResult queryResult = overpassDao.getHighwaysWithinArea(boundingBox);
+        final Graph<EarthNode> graph = GraphUtil.buildGraphFromQueryResult(queryResult);
+
         final Point2D.Double[] graphBoundingBox = GraphUtil.getBoundingBox(graph);
         final QueryableGraph<EarthNode> queryableGraph = new QuadTreeGraph<>(graphBoundingBox[0].getX(), graphBoundingBox[0].getY(), graphBoundingBox[1].getX(), graphBoundingBox[1].getY());
         graph.getNodes().forEach(((MutableGraph<EarthNode>) queryableGraph)::addNode);
@@ -57,14 +63,5 @@ public class Main {
         routeVisualizer.addRoute(circularRoute);
         System.out.printf("Rectangle distance: %fm%n", rectangularRoute.getDistance());
         routeVisualizer.addRoute(rectangularRoute);
-        routeVisualizer.setVisible(true);
-    }
-
-    private static Graph<EarthNode> buildGraphFromOSMExport() {
-        try (InputStream inputStream = Main.class.getClassLoader().getResourceAsStream("export.json")) {
-            return GraphUtil.buildGraphFromOSM(inputStream);
-        } catch (final IOException e) {
-            throw new UncheckedIOException(e);
-        }
     }
 }
